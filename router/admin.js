@@ -9,6 +9,13 @@ const adminController = require('../controllers/adminController');
 
 //admin login api
 router.post('/adminLogin', adminController.adminLoginController);
+//admin search user account api
+router.get('/find', adminController.searchUserAccountController);
+//admin delete user account api
+router.get('/delete', adminController.deleteUserAccountController);
+//admin upload music details api
+router.post('/uploadDetails', adminController.uploadMusicDetailsController);
+
 
 //抛出路由配置
 //Export router configuration

@@ -41,3 +41,62 @@ exports.adminLoginController = (req, res) =>{
         })
     })
 }
+
+/**
+ * admin search user account api
+ */
+exports.searchUserAccountController = (req, res) =>{
+    let {id} = req.query;
+
+    //sql语句，查询所有user
+    //sql statement to query all users
+    const searchUserSql = 'SELECT * FROM user';
+
+    db.query(searchUserSql, [id], (err, resList) =>{
+        if (err) {
+            return res.send({code: 1, message: err.message});
+        }
+
+        //返回一个list， resList存储所有返回的信息
+        //Return a list, resList stores all returned information
+        res.send({code: 0, data:{list: resList}})
+    })
+}
+
+/**
+ * delete user account api
+ */
+exports.deleteUserAccountController = (req, res) =>{
+    let {id} = req.query;
+
+    //sql语句，删除对应id的user
+    //SQL statement, delete the user corresponding to the id
+    const deleteUserSql = 'DELETE FROM user WHERE id =?';
+
+    db.query(deleteUserSql, [id], (err, results) =>{
+        if (err) {
+            return res.send({code: 1, message: err.message});
+        }
+
+        //delete success
+        res.send({code: 0, message: 'Delete User Success'});
+    })
+}
+
+/**
+ * upload music details
+ */
+exports.uploadMusicDetailsController = (req, res) =>{
+    let{musicName, categories, singer} = req.body;
+
+    //sql语句，插入music详情
+    //sql statement, insert music details
+    const uploadMusicDetailsSql = 'INSERT INTO music(musicName, categories, singer) VALUES(?, ?, ?)';
+    db.query(uploadMusicDetailsSql, [musicName, categories, singer], (err, results) =>{
+        if (err) {
+            return res.send({code: 1, message: err.message});
+        }
+
+        res.send({code: 0, message: 'Music Details Upload Success'});
+    })
+}
