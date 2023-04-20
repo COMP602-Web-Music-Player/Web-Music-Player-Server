@@ -4,14 +4,14 @@ const db = require('../config/db');
  * admin login logic
  */
 exports.adminLoginController = (req, res) =>{
-    let {admin, adminpassword} = req.body;
+    let {admin, password} = req.body;
     //sql语句 查询admin字段
     //sql statement query admin field
     const adminSelectSql = 'SELECT admin FROM admin WHERE admin =?';
 
     //sql语句 查询password字段
     //SQL statement query password field
-    const passwordSelectSql = 'SELECT adminpassword FROM admin WHERE adminpassword =?';
+    const passwordSelectSql = 'SELECT password FROM admin WHERE password =?';
 
     db.query(adminSelectSql, admin, (err, results) =>{
         if (err) {
@@ -21,12 +21,12 @@ exports.adminLoginController = (req, res) =>{
         //验证admin字段是否和数据库一致，使用 === 绝对等
         //Verify that the admin field is consistent with the database, use === to be absolutely equal
         if (results.length === 0) {
-            return res.send({code: 1, message:'Administer account name is not correct!'});
+            return res.send({code: 1, message:'Administer name is not correct!'});
         }
 
-        //验证adminpassword字段是否和数据库一致，使用 === 绝对等
-        //Verify that the adminpassword field is consistent with the database, use === to be absolutely equal
-        db.query(passwordSelectSql, adminpassword, (err, results) =>{
+        //验证password字段是否和数据库一致，使用 === 绝对等
+        //Verify that the password field is consistent with the database, use === to be absolutely equal
+        db.query(passwordSelectSql, password, (err, results) =>{
             if (err) {
                 return res.send({code: 1, message:err.message})
             };
@@ -45,7 +45,7 @@ exports.adminLoginController = (req, res) =>{
 /**
  * admin search user account api
  */
-exports.searchUserAccountController = (req, res) =>{
+exports.findUserAccountController = (req, res) =>{
     let {id} = req.query;
 
     //sql语句，查询所有user
@@ -87,16 +87,52 @@ exports.deleteUserAccountController = (req, res) =>{
  * upload music details
  */
 exports.uploadMusicDetailsController = (req, res) =>{
-    let{musicName, categories, singer} = req.body;
+    let{id, musicName, categories, singer} = req.query;
 
-    //sql语句，插入music详情
-    //sql statement, insert music details
-    const uploadMusicDetailsSql = 'INSERT INTO music(musicName, categories, singer) VALUES(?, ?, ?)';
-    db.query(uploadMusicDetailsSql, [musicName, categories, singer], (err, results) =>{
+    let sql = 'UPDATE music SET ';
+    let arr = [];
+
+    if (musicName && categories && singer) {
+        sql = sql + 'musicName=?, categories=?, singer=? WHERE id=?'
+        arr = [musicName, categories, singer, Number(id)]
+    }else if (musicName) {
+        sql = sql + 'musicName=? WHERE id=?';
+        arr = [musicName, Number(id)];
+    }else if (categories) {
+        sql = sql + 'categories WHERE id=?';
+        arr = [categories, Number(id)];
+    }else if (singer) {
+        sql = sql + 'singer WHERE id=?';
+        arr = [singer, Number(id)];
+    }
+
+    //执行sql语句
+    //run sql statement
+    db.query(sql, arr, (err, results) =>{
+        if (err) {
+            return res.send({code: 1, message: err.message});
+        }
+        res.send({code: 0, message: 'Update Success!'});
+    })
+}
+
+/**
+ * admin search music api
+ */
+exports.searchMusicController = (req, res) =>{
+    let {id} = req.query;
+
+    //sql语句，查询所有music
+    //sql statement to query all music
+    const searchUserSql = 'SELECT * FROM music';
+
+    db.query(searchUserSql, [id], (err, resList) =>{
         if (err) {
             return res.send({code: 1, message: err.message});
         }
 
-        res.send({code: 0, message: 'Music Details Upload Success'});
+        //返回一个list， resList存储所有返回的信息
+        //Return a list, resList stores all returned information
+        res.send({code: 0, data:{list: resList}})
     })
 }
