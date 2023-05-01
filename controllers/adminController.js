@@ -84,9 +84,9 @@ exports.deleteUserAccountController = (req, res) =>{
 }
 
 /**
- * upload music details
+ * update music details
  */
-exports.uploadMusicDetailsController = (req, res) =>{
+exports.updateMusicDetailsController = (req, res) =>{
     let{id, musicName, categories, singer} = req.query;
 
     let sql = 'UPDATE music SET ';
@@ -134,5 +134,26 @@ exports.searchMusicController = (req, res) =>{
         //返回一个list， resList存储所有返回的信息
         //Return a list, resList stores all returned information
         res.send({code: 0, data:{list: resList}})
+    })
+}
+
+/**
+ * upload music api
+ */
+exports.uploadMusicController = (req, res) =>{
+    //定义和响应前端请求的music info的参数
+    //Define and respond to the parameters of music info requested by the front end
+    let {coverImage, musicName, categories, singer} = req.body;
+
+    //插入数据
+    //music info insert into music schema
+    const musicInfoInsertSql = 'INSERT INTO music(coverImage, musicName, categories, singer) VALUES(?, ?, ?, ?)'
+
+    db.query(musicInfoInsertSql, [coverImage, musicName, categories, singer], (err, results) =>{
+        if (err) {
+            return res.send({code: 1, message:err.message})
+        };
+
+        res.send({code: 0, message: 'Music Upload Success!'})
     })
 }

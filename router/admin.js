@@ -14,9 +14,11 @@ router.get('/find', adminController.findUserAccountController);
 //admin delete user account api
 router.get('/delete', adminController.deleteUserAccountController);
 //admin upload music details api
-router.get('/uploadDetails', adminController.uploadMusicDetailsController);
+router.get('/updateDetails', adminController.updateMusicDetailsController);
 //admin search music api
 router.get('/search', adminController.searchMusicController);
+//admin upload music api
+router.post('/upload', adminController.uploadMusicController);
 
 //抛出路由配置
 //Export router configuration
