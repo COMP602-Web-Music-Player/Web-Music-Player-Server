@@ -157,3 +157,23 @@ exports.uploadMusicController = (req, res) =>{
         res.send({code: 0, message: 'Music Upload Success!'})
     })
 }
+
+/**
+ * delete music info api
+ */
+exports.deleteMusicController = (req, res) =>{
+    let {id} = req.query;
+
+    //sql语句，删除对应id的user
+    //SQL statement, delete the music corresponding to the id
+    const deleteUserSql = 'DELETE FROM music WHERE id =?';
+
+    db.query(deleteUserSql, [id], (err, results) =>{
+        if (err) {
+            return res.send({code: 1, message: err.message});
+        }
+
+        //delete success
+        res.send({code: 0, message: 'Delete Music Success'});
+    })
+}
