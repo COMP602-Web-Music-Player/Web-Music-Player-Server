@@ -1,5 +1,6 @@
 const db = require('../config/db');
-
+const fs = require('fs');
+const ossClient = require('../config/ali-oss');
 /**
  * admin login logic
  */
@@ -140,22 +141,33 @@ exports.searchMusicController = (req, res) =>{
 /**
  * upload music api
  */
-exports.uploadMusicController = (req, res) =>{
+exports.uploadMusicController = async(req, res) =>{
     //定义和响应前端请求的music info的参数
     //Define and respond to the parameters of music info requested by the front end
     let {coverImage, musicName, categories, singer} = req.body;
 
-    //插入数据
-    //music info insert into music schema
-    const musicInfoInsertSql = 'INSERT INTO music(coverImage, musicName, categories, singer) VALUES(?, ?, ?, ?)'
+    const fileContent = fs.readFileSync(req.file.path);
+    try {
+        //调用阿里云OSS对象，music file上传到阿里云OSS存储，并获取它的url
+        //Call AliCloud OSS object, music file upload to AliCloud OSS storage, and get its url
+        const ossResult = await ossClient.put(req.file.originalname, fileContent);
+        const fileUrl = ossResult.url;
 
-    db.query(musicInfoInsertSql, [coverImage, musicName, categories, singer], (err, results) =>{
-        if (err) {
-            return res.send({code: 1, message:err.message})
-        };
+        //插入数据
+        //music info insert into music schema
+        const musicInfoInsertSql = 'INSERT INTO music(coverImage, musicName, categories, singer, url) VALUES(?, ?, ?, ?, ?)'
 
-        res.send({code: 0, message: 'Music Upload Success!'})
-    })
+        db.query(musicInfoInsertSql, [coverImage, musicName, categories, singer, fileUrl], (err, results) =>{
+            if (err) {
+                return res.send({code: 1, message:err.message})
+            };
+
+            res.send({code: 0, message: 'Music Upload Success!'})
+        })
+    } catch (err) {
+        console.error(err);
+        return res.send({code: 1, message: 'Failed to upload'});
+    }
 }
 
 /**

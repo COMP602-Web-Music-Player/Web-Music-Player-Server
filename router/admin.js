@@ -3,10 +3,16 @@ const express = require('express');
 //Use the Router in the express framework to perform operations such as post and get
 const router = express.Router();
 
+//import multer 将文件保存到指定的目录中，准备读取该文件
+const multer = require('multer');
+const upload = multer({
+    //storage music file
+    dest: 'file/'
+})
+
 //admin的具体操作被抽离至controllers文件夹下的adminController文件，方便具体维护和使用
 //The specific operations of admin are extracted to the adminController file under the controllers folder, which is convenient for specific maintenance and use
 const adminController = require('../controllers/adminController');
-
 //admin login api
 router.post('/adminLogin', adminController.adminLoginController);
 //admin search user account api
@@ -18,7 +24,7 @@ router.get('/updateDetails', adminController.updateMusicDetailsController);
 //admin search music api
 router.get('/search', adminController.searchMusicController);
 //admin upload music api
-router.post('/upload', adminController.uploadMusicController);
+router.post('/upload', upload.single('file'), adminController.uploadMusicController);
 //admin delete music info api
 router.get('/remove', adminController.deleteMusicController);
 
