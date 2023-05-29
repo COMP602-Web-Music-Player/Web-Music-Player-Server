@@ -88,23 +88,26 @@ exports.deleteUserAccountController = (req, res) =>{
  * update music details
  */
 exports.updateMusicDetailsController = (req, res) =>{
-    let{id, musicName, categories, singer} = req.query;
+    let{id, musicName, categories, singer, mv} = req.query;
 
     let sql = 'UPDATE music SET ';
     let arr = [];
 
-    if (musicName && categories && singer) {
-        sql = sql + 'musicName=?, categories=?, singer=? WHERE id=?'
-        arr = [musicName, categories, singer, Number(id)]
+    if (musicName && categories && singer && mv) {
+        sql = sql + 'musicName=?, categories=?, singer=?, mv=? WHERE id=?'
+        arr = [musicName, categories, singer, mv, Number(id)]
     }else if (musicName) {
         sql = sql + 'musicName=? WHERE id=?';
         arr = [musicName, Number(id)];
     }else if (categories) {
-        sql = sql + 'categories WHERE id=?';
+        sql = sql + 'categories=? WHERE id=?';
         arr = [categories, Number(id)];
     }else if (singer) {
-        sql = sql + 'singer WHERE id=?';
+        sql = sql + 'singer=? WHERE id=?';
         arr = [singer, Number(id)];
+    }else if (mv) {
+        sql = sql + 'mv=? WHERE id=?';
+        arr = [mv, Number(id)];
     }
 
     //执行sql语句
@@ -144,7 +147,7 @@ exports.searchMusicController = (req, res) =>{
 exports.uploadMusicController = async(req, res) =>{
     //定义和响应前端请求的music info的参数
     //Define and respond to the parameters of music info requested by the front end
-    let {coverImage, musicName, categories, singer} = req.body;
+    let {coverImage, musicName, categories, singer, mv} = req.body;
 
     const fileContent = fs.readFileSync(req.file.path);
     try {
@@ -155,9 +158,9 @@ exports.uploadMusicController = async(req, res) =>{
 
         //插入数据
         //music info insert into music schema
-        const musicInfoInsertSql = 'INSERT INTO music(coverImage, musicName, categories, singer, url) VALUES(?, ?, ?, ?, ?)'
+        const musicInfoInsertSql = 'INSERT INTO music(coverImage, musicName, categories, singer, mv, url) VALUES(?, ?, ?, ?, ?, ?)'
 
-        db.query(musicInfoInsertSql, [coverImage, musicName, categories, singer, fileUrl], (err, results) =>{
+        db.query(musicInfoInsertSql, [coverImage, musicName, categories, singer, mv, fileUrl], (err, results) =>{
             if (err) {
                 return res.send({code: 1, message:err.message})
             };
