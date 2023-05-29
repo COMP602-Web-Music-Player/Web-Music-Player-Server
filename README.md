@@ -13,4 +13,4 @@ And we are using the MySql as our prject database.
 
 How to start: 
 npm install: install all depedeciies
-npm run serve: start backend project at port 3000
+node/nodemon app.js: start backend project at port 3000
