@@ -8,7 +8,7 @@ adminController.js will support the administer to upload music, edit music infor
 userController.js will support the user to register and login to our Web Music Player application.
 
 How to build this Project: This project is a backend project which are using Nodejs as our runtime environment, JavaScript as development language. 
-In the meantime, we are express framework, body-parser is the HTTP request body parsing middleware, and we are using cors to complete the cross-domain request of the front and back end. 
+In the meantime, we are Express framework, body-parser is the HTTP request body parsing middleware, and we are using cors to complete the cross-domain request of the front and back end. 
 And we are using the MySql as our project database.
 
 How to start: 
