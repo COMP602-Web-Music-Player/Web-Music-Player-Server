@@ -192,3 +192,22 @@ exports.deleteMusicController = (req, res) =>{
         res.send({code: 0, message: 'Delete Music Success'});
     })
 }
+
+/**
+ * get user avatar api
+ */
+exports.userGetAvatarController = (req, res) =>{
+    let {username} = req.query;
+
+    const searchUserSql = 'SELECT * FROM user WHERE username=?';
+
+    db.query(searchUserSql, [username], (err, resList) =>{
+        if (err) {
+            return res.send({code: 1, message: err.message});
+        }
+
+        //返回一个list， resList存储所有返回的信息
+        //Return a list, resList stores all returned information
+        res.send({code: 0, data:{list: resList}})
+    })
+}

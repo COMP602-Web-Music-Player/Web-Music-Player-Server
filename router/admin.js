@@ -27,6 +27,8 @@ router.get('/search', adminController.searchMusicController);
 router.post('/upload', upload.single('file'), adminController.uploadMusicController);
 //admin delete music info api
 router.get('/remove', adminController.deleteMusicController);
+//admin get user avatar api
+router.get('/getAvatar', adminController.userGetAvatarController);
 
 //抛出路由配置
 //Export router configuration
