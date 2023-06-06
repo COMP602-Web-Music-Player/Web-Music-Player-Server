@@ -1,5 +1,6 @@
 const db = require('../config/db');
-
+const fs = require('fs');
+const ossClient = require('../config/ali-oss');
 /**
  * user login logic
  */
@@ -43,10 +44,10 @@ exports.userLoginController = (req, res) =>{
 /**
  * user register logic
  */
-exports.userRegisterController = (req, res) =>{
+exports.userRegisterController = async(req, res) =>{
     //定义和响应前端请求的user info的参数
     //Define and respond to the parameters of user info requested by the front end
-    let{username, password} = req.body;
+    let{username, password, email, age} = req.body;
 
     //username, password 是否为空的校验
     //Check if username, password is empty
@@ -56,27 +57,27 @@ exports.userRegisterController = (req, res) =>{
 
     //username 不重复
     //username cannot be repeated
-    const usernameSelectSql = 'SELECT * FROM user WHERE username =?';
-    db.query(usernameSelectSql, username, (err, results) =>{
-        if (err) {
-            return res.send({code: 1, message:err.message})
-        };
-
-        //如果打印的数组值为空值，则return一个error message提示username已经存在
-        //If the printed array value is empty, return an error message indicating that username already exists
-        if (results.length > 0) {
-            return res.send({code: 1, message:' The username has already exists.'});
-        };
-
+    const fileContent = fs.readFileSync(req.file.path);
+    
+    try {
+        //调用阿里云OSS对象，music file上传到阿里云OSS存储，并获取它的url
+        //Call AliCloud OSS object, music file upload to AliCloud OSS storage, and get its url
+        const ossResult = await ossClient.put(req.file.originalname, fileContent);
+        const fileUrl = ossResult.url;
         //插入数据
         //user info insert into user schema
-        const userInfoInsertSql = 'INSERT INTO user(username, password) VALUES(?, ?)';
-        db.query(userInfoInsertSql, [username, password], (err,results) =>{
+        const userInfoInsertSql = 'INSERT INTO user(username, password, avatar, email, age) VALUES(?, ?, ?, ?, ?)';
+
+        db.query(userInfoInsertSql, [username, password, email, fileUrl, age], (err,results) =>{
             if (err) {
                 return res.send({code: 1, message:err.message})
             };
 
             res.send({code: 0, message: 'User Register Success!'})
         })
-    })
+        
+    } catch (err) {
+        console.error(err);
+        return res.send({code: 1, message: 'Failed to upload'});
+    }
 }
