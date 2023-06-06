@@ -66,7 +66,7 @@ exports.userRegisterController = async(req, res) =>{
         const fileUrl = ossResult.url;
         //插入数据
         //user info insert into user schema
-        const userInfoInsertSql = 'INSERT INTO user(username, password, avatar, email, age) VALUES(?, ?, ?, ?, ?)';
+        const userInfoInsertSql = 'INSERT INTO user(username, password, email, avatar, age) VALUES(?, ?, ?, ?, ?)';
 
         db.query(userInfoInsertSql, [username, password, email, fileUrl, age], (err,results) =>{
             if (err) {
